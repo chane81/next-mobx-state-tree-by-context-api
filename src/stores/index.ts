@@ -4,12 +4,15 @@ import {
   Instance,
   SnapshotIn,
   SnapshotOut,
-  types
+  types,
+  onSnapshot
 } from 'mobx-state-tree';
 import { enableStaticRendering } from 'mobx-react';
 import fooStore from './foo/fooStore';
 import barStore from './bar/barStore';
+import cookie from 'react-cookies';
 
+const STORE_PERSIST_KEY = 'STORE';
 let initStore: IStore | undefined = null as any;
 
 /** 서버 여부 true/false */
@@ -38,14 +41,35 @@ const defaultValue: IStoreSnapshotIn = {
   barModel: { ...barStore.defaultValue }
 };
 
+const expires = new Date();
+expires.setDate(Date.now() + 1000 * 60 * 60 * 24);
+
 /** 스토어 initialize */
 const initializeStore = (snapshot: null | IStoreSnapshotIn = null): IStore => {
-  const _store = initStore ?? store.create(defaultValue);
   const isServer = typeof window === 'undefined';
+  const _store = initStore ?? store.create(defaultValue);
 
   if (snapshot) {
     applySnapshot(_store, { ...defaultValue, ...snapshot });
+    // applySnapshot(_store, {
+    //   ...defaultValue,
+    //   ...{
+    //     fooModel: {
+    //       identifier: 'fooModel',
+    //       fooVal: '',
+    //       count: 21
+    //     }
+    //   }
+    // });
   }
+
+  onSnapshot(_store, (snapshot) => {
+    console.log({ snapshot });
+
+    cookie.save(STORE_PERSIST_KEY, JSON.stringify(snapshot), {
+      expires
+    });
+  });
 
   if (isServer) return _store;
 

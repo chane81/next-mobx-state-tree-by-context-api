@@ -1,4 +1,4 @@
-import { Instance, types } from 'mobx-state-tree';
+import { Instance, types, onSnapshot } from 'mobx-state-tree';
 
 /** model id */
 const IDENTIFIER = 'fooModel';
@@ -17,7 +17,7 @@ const model = types
     };
 
     const addCount = () => {
-      self.count += 1;
+      self.count += 2;
     };
 
     const setCount = (val: number) => {

@@ -3,9 +3,15 @@ import { initializeStore, useStore, StoreProvider } from '../stores';
 import { onPatch } from 'mobx-state-tree';
 import env from '../../env';
 import { AppPropsType } from 'next/dist/next-server/lib/utils';
+import cookies from 'next-cookies';
 
 const App = ({ Component, pageProps }: AppPropsType) => {
-  const store = initializeStore(pageProps.initialState);
+  console.info('pageProps', pageProps.initialState);
+
+  const store = initializeStore({
+    ...pageProps.persistState,
+    ...pageProps.initialState
+  });
 
   // mst 디버깅 로그
   if (env.NODE_ENV === 'development') {
@@ -21,6 +27,22 @@ const App = ({ Component, pageProps }: AppPropsType) => {
       <Component {...pageProps} />
     </StoreProvider>
   );
+};
+
+App.getInitialProps = async (context) => {
+  const { ctx } = context;
+  const pageProps = {};
+  const STORE_PERSIST_KEY = 'STORE';
+
+  const cookie = cookies(ctx);
+
+  const persistState = cookie[STORE_PERSIST_KEY];
+
+  return {
+    pageProps: {
+      persistState
+    }
+  };
 };
 
 export default App;

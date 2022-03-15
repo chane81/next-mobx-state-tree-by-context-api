@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react-lite';
+import { applySnapshot } from 'mobx-state-tree';
 import { initializeStore, IStore, useStore } from '../stores';
 import { GetServerSideProps } from 'next';
 import { getSnapshot } from 'mobx-state-tree';
@@ -35,23 +36,23 @@ const Home = () => {
 
 export default observer(Home);
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  console.log('server side: ', env.MY_VAL);
+// export const getServerSideProps: GetServerSideProps = async () => {
+//   console.log('server side: ', env.MY_VAL);
 
-  const store = initializeStore({
-    fooModel: {
-      fooVal: 'test11'
-    }
-  });
-  store.fooModel.setCount(3);
+//   const store = initializeStore({
+//     fooModel: {
+//       fooVal: 'test11'
+//     }
+//   });
+//   store.fooModel.setCount(3);
 
-  const initialState = getSnapshot<IStore>(store);
+//   const initialState = getSnapshot<IStore>(store);
 
-  console.log('initialState', initialState);
+//   console.log('initialState', initialState);
 
-  return {
-    props: {
-      initialState
-    }
-  };
-};
+//   return {
+//     props: {
+//       initialState
+//     }
+//   };
+// };
